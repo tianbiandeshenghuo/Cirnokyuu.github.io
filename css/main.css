@@ -1237,7 +1237,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #b3eeff;
+  background: #2d8cd6;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2311,6 +2311,13 @@ ul.breadcrumb li + li:last-child {
   color: #ccc;
   margin: auto;
 }
+mjx-container[jax="CHTML"][display="true"],
+.has-jax {
+  overflow: auto hidden;
+}
+mjx-container + br {
+  display: none;
+}
 .header {
   margin: 0 auto;
   position: relative;
@@ -2425,8 +2432,9 @@ ul.breadcrumb li + li:last-child {
 }
 .container {
   background-image: url("https://cdn.luogu.com.cn/upload/image_hosting/0injo9lu.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   background-size: cover;
-  background-position: center;
 }
 @media (min-width: 768px) and (max-width: 991px) {
   .site-nav-toggle,
