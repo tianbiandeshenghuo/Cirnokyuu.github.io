@@ -1,22 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>博客搬迁</title>
-    <url>/%E9%9D%9E-OI/hello-world/</url>
-    <content><![CDATA[<p>听说洛谷博客要寄，所以就搬到这里来了。</p>
-<span id="more"></span>
-<p><a href="https://www.luogu.com.cn/blog/78372/">洛谷博客</a> <a href="http://120.55.40.84/blog/xiong-6">WFLSOJ</a></p>
-<p>应该会陆陆续续搬一些文章上来 QAQ</p>
-<p>不指望有人看，所以会写一些 OI 无关的闲记之类的。</p>
-]]></content>
-      <categories>
-        <category>非 OI</category>
-      </categories>
-      <tags>
-        <tag>公告</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>生成函数入门</title>
     <url>/OI/GF-basic/</url>
     <content><![CDATA[<p>生成函数是解决计数问题的一个非常有效的手段，本文介绍了生成函数的定义以及基础运用。</p>
@@ -232,6 +216,22 @@ LHS &amp;= \sum_{j=1}^{\infty} \frac{1}{j}\sum_{i=1}^{\infty} f_i (x^j)^i\\
         <tag>多项式</tag>
         <tag>生成函数</tag>
         <tag>学习笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>博客搬迁</title>
+    <url>/%E9%9D%9E-OI/hello-world/</url>
+    <content><![CDATA[<p>听说洛谷博客要寄，所以就搬到这里来了。</p>
+<span id="more"></span>
+<p><a href="https://www.luogu.com.cn/blog/78372/">洛谷博客</a> <a href="http://120.55.40.84/blog/xiong-6">WFLSOJ</a></p>
+<p>应该会陆陆续续搬一些文章上来 QAQ</p>
+<p>不指望有人看，所以会写一些 OI 无关的闲记之类的。</p>
+]]></content>
+      <categories>
+        <category>非 OI</category>
+      </categories>
+      <tags>
+        <tag>公告</tag>
       </tags>
   </entry>
   <entry>
