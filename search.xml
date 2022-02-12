@@ -1334,8 +1334,8 @@ f_k = \sum _{i=k}^n (-1)^{k-i}{i\brack k} g_k
       </tags>
   </entry>
   <entry>
-    <title>accoders-0212</title>
-    <url>/uncategorized/accoders-0212/</url>
+    <title>2022.02.12 模拟赛</title>
+    <url>/OI/accoders-0212/</url>
     <content><![CDATA[<p>不打模拟赛的小朋友会被抓去补题哦 /youl</p>
 <span id="more"></span>
 <h3 id="t1-good"><a class="markdownIt-Anchor" href="#t1-good"></a> T1 good</h3>
@@ -1382,6 +1382,9 @@ f_k = \sum _{i=k}^n (-1)^{k-i}{i\brack k} g_k
             <details close=""><summary>查看代码</summary></details>
           </div>
 ]]></content>
+      <categories>
+        <category>OI</category>
+      </categories>
       <tags>
         <tag>模拟赛</tag>
         <tag>DP</tag>
