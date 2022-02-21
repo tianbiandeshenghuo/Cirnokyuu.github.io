@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/avat.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/avat.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/avat.jpg">
+  <link rel="mask-icon" href="/images/avat.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"cirnokyuu.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这篇博客以浅显的角度简单讲述了 LCT 的原理与一种实现方式，前置：熟练掌握任何一种树链剖分、Splay。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3 岁小孩都能写的 LCT 教程">
+<meta property="og:url" content="https://cirnokyuu.github.io/OI/link-cut-tree/index.html">
+<meta property="og:site_name" content="Cirno_9&#39;s Blog">
+<meta property="og:description" content="这篇博客以浅显的角度简单讲述了 LCT 的原理与一种实现方式，前置：熟练掌握任何一种树链剖分、Splay。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-02-19T06:01:36.000Z">
+<meta property="article:modified_time" content="2022-02-21T08:44:45.919Z">
+<meta property="article:author" content="Cirno_9">
+<meta property="article:tag" content="学习笔记">
+<meta property="article:tag" content="LCT">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://cirnokyuu.github.io/OI/link-cut-tree/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>3 岁小孩都能写的 LCT 教程 | Cirno_9's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Cirno_9's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">With a ruthless enemy</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://cirnokyuu.github.io/OI/link-cut-tree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://s4.ax1x.com/2022/01/12/7uKVzj.jpg">
+      <meta itemprop="name" content="Cirno_9">
+      <meta itemprop="description" content="Oracle">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cirno_9's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          3 岁小孩都能写的 LCT 教程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-02-19 14:01:36" itemprop="dateCreated datePublished" datetime="2022-02-19T14:01:36+08:00">2022-02-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-21 16:44:45" itemprop="dateModified" datetime="2022-02-21T16:44:45+08:00">2022-02-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OI/" itemprop="url" rel="index"><span itemprop="name">OI</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/OI/link-cut-tree/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/OI/link-cut-tree/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这篇博客以浅显的角度简单讲述了 LCT 的原理与一种实现方式，前置：熟练掌握任何一种树链剖分、Splay。</p>
+<span id="more"></span>
+<h3 id="前言及简介"><a class="markdownIt-Anchor" href="#前言及简介"></a> 前言及简介</h3>
+<p>树链剖分大家都会，不就是每个点一个重儿子边，重边连起来形成一堆重链，然后查询链的信息时，可以在重链上维护一点东西（比如轻重链剖分，使用的就是线段树），一次跳完一整个重链嘛。但是，当树的形态产生变化的时候（比如在某个节点下加一个儿子什么的），线段树等静态数据结构就不能很好地维护剖分，LCT 就是用来干这事的。</p>
+<p>不知道读者是否见过这个结论：在有根树上每次将某个点到根的轻边（作为轻儿子到父亲的边）全部改为重边（重儿子），那么一共会修改 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mo stretchy="false">(</mo><mi>n</mi><mo>+</mo><mi>m</mi><mo stretchy="false">)</mo><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O((n+m)\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">m</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span> 次。也就是说，暴力地每次跳到所在重链的顶部，然后改掉其父亲的重儿子，然后继续往上一直到根，修改的次数是均摊 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span> 的。这个的证明很简单，自行思考，同时这个操作的名字叫做 access，<strong>重音是第一个音节</strong>。</p>
+<p>实际上 LCT 就是这么暴力修改的。其次，由于你维护这个重链需要将它从中间砍开分为两个链（被新的重儿子顶替时），这里采取平衡树，准确的说是 Splay。乍一看需要 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>m</mi><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(m \log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord mathdefault">m</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span> 次 Splay 上的操作，复杂度是均摊 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><msup><mo><mi>log</mi><mo>⁡</mo></mo><mn>2</mn></msup><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(\log^2 n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.148448em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mop"><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8984479999999999em;"><span style="top:-3.1473400000000002em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span> 的，实际上由于 Splay 操作的特殊性，它的复杂度是均摊 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mi>log</mi><mo>⁡</mo><mi>n</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(\log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mop">lo<span style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">n</span><span class="mclose">)</span></span></span></span> 的。别问为什么，问就是 OI 用不到。</p>
+<p>现在你已经知道 access 是什么了，来看看如何实现吧。</p>
+<h3 id="splay"><a class="markdownIt-Anchor" href="#splay"></a> Splay</h3>
+<p>前面提到了用 Splay 来维护一条重链，具体就是把这条链当做一个序列（以深度为序）。对于每条重链还需要记录其链顶的父亲是谁，这个一般记录在其 Splay 的根上。但是这样就产生一个细节：判断 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 是否为根的时候，应该用 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>f</mi><msub><mi>a</mi><mi>x</mi></msub></mrow><annotation encoding="application/x-tex">fa_x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mord"><span class="mord mathdefault">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">x</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span> 是否有儿子是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span>。同时 rotate 的时候也要判断是否转到了根。</p>
+<p>先来看看 Splay 的部分怎么写的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> get(x) (ch[fa[x]][1]==x)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> isr(x) (ch[fa[x]][0]!=x&amp;&amp;ch[fa[x]][1]!=x)</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">rotate</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> y=fa[x],z=fa[y],k=<span class="built_in">get</span>(x);</span><br><span class="line">	<span class="built_in">pdown</span>(y),<span class="built_in">pdown</span>(x);</span><br><span class="line">	<span class="keyword">if</span>(!<span class="built_in">isr</span>(y))ch[z][<span class="built_in">get</span>(y)]=x;</span><br><span class="line">	ch[y][k]=ch[x][!k],fa[y]=x;</span><br><span class="line">	<span class="keyword">if</span>(ch[x][!k])fa[ch[x][!k]]=y;</span><br><span class="line">	ch[x][!k]=y,fa[x]=z,<span class="built_in">pup</span>(y),<span class="built_in">pup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">upd</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;<span class="keyword">if</span>(!<span class="built_in">isr</span>(x))<span class="built_in">upd</span>(fa[x]);<span class="built_in">pdown</span>(x);&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">splay</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">	<span class="built_in">upd</span>(x);</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> y=fa[x];!<span class="built_in">isr</span>(x);<span class="built_in">rotate</span>(x),y=fa[x])<span class="keyword">if</span>(!<span class="built_in">isr</span>(y))<span class="built_in">rotate</span>(<span class="built_in">get</span>(x)==<span class="built_in">get</span>(y)?y:x);</span><br><span class="line">	<span class="built_in">pup</span>(x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为什么要维护一个翻转标记呢？看到后面就知道了，先不管。</p>
+<p>需要一个 upd 的原因在于，平时的 Splay 都是从根往下找到当前节点，但在 LCT 中是已知了这个点，再把它旋转至根，所以一定要预先<strong>依次</strong>下传根到它的标记。</p>
+<p>然后 rotate 里面就加了一句判根也就是 <code>!isr(y)</code>，Splay 就正常写，也需要判根（结束条件）。</p>
+<h3 id="access"><a class="markdownIt-Anchor" href="#access"></a> Access</h3>
+<p><code>access(x)</code> 实现了将 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 到根“打通”的这个过程，具体而言每次找到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 所在重链链顶的父亲 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>u</mi></mrow><annotation encoding="application/x-tex">u</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">u</span></span></span></span>，连上 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>u</mi><mo>→</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">u\to x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">u</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 并断掉 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>u</mi></mrow><annotation encoding="application/x-tex">u</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">u</span></span></span></span> 原来的重儿子，再从 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>u</mi></mrow><annotation encoding="application/x-tex">u</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">u</span></span></span></span> 开始一直贯穿到根。其实现是简短而巧妙的，先看代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">access</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> y=<span class="number">0</span>;x;y=x,x=fa[x])<span class="built_in">splay</span>(x),ch[x][<span class="number">1</span>]=y,<span class="built_in">pup</span>(x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每次先 <code>splay(x)</code>，转到当前重链的根，以获取其链顶的父亲。<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 保存的是，上一次跳完的是哪条重链，这样做的话 <code>ch[x][1]=y</code> 一句话就完成了断重和连边两个过程。最后需要更新 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 的信息（因为儿子变了），并且把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 作为新的 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span>（因为对于下一条跳到的链来说，就应该连到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 所在的链上了，而 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 恰好已经旋到了该 Splay 的根）。</p>
+<h3 id="makeroot-与-findroot"><a class="markdownIt-Anchor" href="#makeroot-与-findroot"></a> makeroot 与 findroot</h3>
+<p>LCT 还可以支持换根和找根。</p>
+<p><code>make(x)</code> 表示把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 所在树的树根换为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span>，具体操作是把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 到根的路打通到一个 Splay 中，然后翻转 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 到根的路。注意 access 之后往往需要 splay 一下，因为打通的过程中，第一次 splay 完了我们就已经把原来的 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 丢失，旋转其父亲去了，最后 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 往往不是 Splay 的根。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">make</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;<span class="built_in">access</span>(x),<span class="built_in">splay</span>(x),<span class="built_in">rv</span>(x);&#125;</span><br></pre></td></tr></table></figure>
+<p>然后是 <code>find(x)</code> 表示找到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 所在树的根是哪个。根显然是深度最浅的，把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 与根打通到一个 Splay 中然后一直往左走，找到的就是根了。注意路径上要一路下传标记，并且找到根后需要 splay 一下保证复杂度。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">	<span class="keyword">for</span>(<span class="built_in">access</span>(x),<span class="built_in">splay</span>(x);ch[x][<span class="number">0</span>];x=ch[x][<span class="number">0</span>])<span class="built_in">pdown</span>(x);</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">splay</span>(x),x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>LCT 最忌滥用 findroot，因为它虽然是有返回值的函数，但它会改变 LCT 的形态。</p>
+<h3 id="link-与-cut"><a class="markdownIt-Anchor" href="#link-与-cut"></a> link 与 cut</h3>
+<p>标志性的操作，不然为什么叫 LCT。</p>
+<p><code>link(x,y)</code>，连上一条 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(x, y)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mclose">)</span></span></span></span> 的边。首先它们肯定属于不同连通块，你先 <code>make(x)</code>，再把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 挂在 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 的儿子上就行了（注意，这种做法 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 要作为轻儿子挂上去，否则你要 <code>make(y)</code> 才能作为重儿子挂上 Splay，但做麻烦了）。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">link</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="built_in">find</span>(x)!=<span class="built_in">find</span>(y))<span class="built_in">make</span>(x),<span class="built_in">access</span>(y),fa[x]=y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>cut(x,y)</code>，把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(x,y)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mclose">)</span></span></span></span> 之间的边割掉。这个就比较难以处理，因为你首先要判断 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo stretchy="false">(</mo><mi>x</mi><mo separator="true">,</mo><mi>y</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(x,y)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault">x</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span><span class="mclose">)</span></span></span></span> 是否有边，还得知道怎么才能断开。先看看代码咋写的：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cut</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">	<span class="built_in">make</span>(x);</span><br><span class="line">	<span class="keyword">if</span>(<span class="built_in">find</span>(y)==x&amp;&amp;!ch[y][<span class="number">0</span>]&amp;&amp;fa[y]==x)fa[y]=ch[x][<span class="number">1</span>]=<span class="number">0</span>,<span class="built_in">pup</span>(x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>理解一下，先把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 作为根，然后 <code>find(y)</code> 一下看看是不是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span>，也就是判连通块。</p>
+<p>注意此时，<code>find(y)</code> 做了一次 <code>access(y)</code>，将 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 的路径打通了，并且把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 旋上了该 Splay 的根（因为 <code>find(y)</code> 找到的是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 才能进行下一步）。如果 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x\to y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 有直接连边，那就两个充要条件：</p>
+<ol>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x\to y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 在 Splay 上直接连边（<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 的父亲是 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span>）；</li>
+<li><span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 的左子树为空。</li>
+</ol>
+<p>思考一下这说明了什么事情：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 的路径上不存在比 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 深且比 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 浅的点。这当然可以作为判断是否有直接连边的充要条件啦。</p>
+<h3 id="split"><a class="markdownIt-Anchor" href="#split"></a> split</h3>
+<p>没有查询叫什么数据结构？</p>
+<p>LCT 的查询，以路径查询举例。那也就是说，只要把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x\to y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 的路径放进一个 Splay，它根节点的信息就是路径的信息了，这个函数我们把它叫 <code>split(x,y)</code>，函数名类比平衡树的分裂操作。</p>
+<p>怎么把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi><mo>→</mo><mi>y</mi></mrow><annotation encoding="application/x-tex">x\to y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 的路径抽离出来？把 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 作为根，然后打通 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>y</mi></mrow><annotation encoding="application/x-tex">y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.03588em;">y</span></span></span></span> 到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 的路径不就行了嘛。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">split</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>&#123;<span class="built_in">make</span>(x),<span class="built_in">access</span>(y),<span class="built_in">splay</span>(y);&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="板题代码"><a class="markdownIt-Anchor" href="#板题代码"></a> 板题代码</h3>
+<div class="note success no-icon">
+            <details close=""><summary>查看代码</summary><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;bits/stdc++.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> pbk push_back</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FOR(i,a,b) for(int i=a,i##i=b;i&lt;=i##i;++i)</span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> N=<span class="number">2e5</span>+<span class="number">7</span>;</span><br><span class="line"><span class="keyword">int</span> fa[N],ch[N][<span class="number">2</span>],vl[N],s[N],rv[N];</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> get(x) (ch[fa[x]][1]==x)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> isr(x) (ch[fa[x]][0]!=x&amp;&amp;ch[fa[x]][1]!=x)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> rv(x) (swap(ch[x][0],ch[x][1]),rv[x]^=1)</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">pup</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;s[x]=s[ch[x][<span class="number">0</span>]]^s[ch[x][<span class="number">1</span>]]^vl[x];&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">pdown</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;<span class="keyword">if</span>(rv[x])<span class="built_in">rv</span>(ch[x][<span class="number">0</span>]),<span class="built_in">rv</span>(ch[x][<span class="number">1</span>]),rv[x]=<span class="number">0</span>;&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">rotate</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> y=fa[x],z=fa[y],k=<span class="built_in">get</span>(x);</span><br><span class="line">	<span class="built_in">pdown</span>(y),<span class="built_in">pdown</span>(x);</span><br><span class="line">	<span class="keyword">if</span>(!<span class="built_in">isr</span>(y))ch[z][<span class="built_in">get</span>(y)]=x;</span><br><span class="line">	ch[y][k]=ch[x][!k],fa[y]=x;</span><br><span class="line">	<span class="keyword">if</span>(ch[x][!k])fa[ch[x][!k]]=y;</span><br><span class="line">	ch[x][!k]=y,fa[x]=z,<span class="built_in">pup</span>(y),<span class="built_in">pup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">upd</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;<span class="keyword">if</span>(!<span class="built_in">isr</span>(x))<span class="built_in">upd</span>(fa[x]);<span class="built_in">pdown</span>(x);&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">splay</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">	<span class="built_in">upd</span>(x);</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> y=fa[x];!<span class="built_in">isr</span>(x);<span class="built_in">rotate</span>(x),y=fa[x])<span class="keyword">if</span>(!<span class="built_in">isr</span>(y))<span class="built_in">rotate</span>(<span class="built_in">get</span>(x)==<span class="built_in">get</span>(y)?y:x);</span><br><span class="line">	<span class="built_in">pup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">access</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> y=<span class="number">0</span>;x;y=x,x=fa[x])<span class="built_in">splay</span>(x),ch[x][<span class="number">1</span>]=y,<span class="built_in">pup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">make</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;<span class="built_in">access</span>(x),<span class="built_in">splay</span>(x),<span class="built_in">rv</span>(x);&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">find</span><span class="params">(<span class="keyword">int</span> x)</span></span>&#123;</span><br><span class="line">	<span class="keyword">for</span>(<span class="built_in">access</span>(x),<span class="built_in">splay</span>(x);ch[x][<span class="number">0</span>];x=ch[x][<span class="number">0</span>])<span class="built_in">pdown</span>(x);</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">splay</span>(x),x;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">link</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="built_in">find</span>(x)!=<span class="built_in">find</span>(y))<span class="built_in">make</span>(x),<span class="built_in">access</span>(y),fa[x]=y;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">split</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>&#123;<span class="built_in">make</span>(x),<span class="built_in">access</span>(y),<span class="built_in">splay</span>(y);&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">cut</span><span class="params">(<span class="keyword">int</span> x,<span class="keyword">int</span> y)</span></span>&#123;</span><br><span class="line">	<span class="built_in">make</span>(x);</span><br><span class="line">	<span class="keyword">if</span>(<span class="built_in">find</span>(y)==x&amp;&amp;!ch[y][<span class="number">0</span>]&amp;&amp;fa[y]==x)fa[y]=ch[x][<span class="number">1</span>]=<span class="number">0</span>,<span class="built_in">pup</span>(x);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> n,m,o,x,y;</span><br><span class="line"><span class="function"><span class="keyword">signed</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">&quot;%d%d&quot;</span>,&amp;n,&amp;m);</span><br><span class="line">	<span class="built_in">FOR</span>(i,<span class="number">1</span>,n)<span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,vl+i);</span><br><span class="line">	<span class="keyword">while</span>(m--)&#123;</span><br><span class="line">		<span class="built_in">scanf</span>(<span class="string">&quot;%d%d%d&quot;</span>,&amp;o,&amp;x,&amp;y);</span><br><span class="line">		<span class="keyword">if</span>(!o)<span class="built_in">split</span>(x,y),<span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,s[y]);</span><br><span class="line">		<span class="keyword">if</span>(o==<span class="number">1</span>)<span class="built_in">link</span>(x,y);</span><br><span class="line">		<span class="keyword">if</span>(o==<span class="number">2</span>)<span class="built_in">cut</span>(x,y);</span><br><span class="line">		<span class="keyword">if</span>(o==<span class="number">3</span>)<span class="built_in">splay</span>(x),vl[x]=y;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></details>
+          </div>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          
+          <div class="post-tags">
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="tag"><i class="fa fa-tag"></i> 学习笔记</a>
+              <a href="/tags/LCT/" rel="tag"><i class="fa fa-tag"></i> LCT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/OI/CF1580-sol/" rel="prev" title="CF1580 题解">
+      <i class="fa fa-chevron-left"></i> CF1580 题解
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/OI/accoders-0219/" rel="next" title="accoders-0219">
+      accoders-0219 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80%E5%8F%8A%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text"> 前言及简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#splay"><span class="nav-number">2.</span> <span class="nav-text"> Splay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#access"><span class="nav-number">3.</span> <span class="nav-text"> Access</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#makeroot-%E4%B8%8E-findroot"><span class="nav-number">4.</span> <span class="nav-text"> makeroot 与 findroot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#link-%E4%B8%8E-cut"><span class="nav-number">5.</span> <span class="nav-text"> link 与 cut</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#split"><span class="nav-number">6.</span> <span class="nav-text"> split</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%BF%E9%A2%98%E4%BB%A3%E7%A0%81"><span class="nav-number">7.</span> <span class="nav-text"> 板题代码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Cirno_9"
+      src="https://s4.ax1x.com/2022/01/12/7uKVzj.jpg">
+  <p class="site-author-name" itemprop="name">Cirno_9</p>
+  <div class="site-description" itemprop="description">Oracle</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">33</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="mailto:cirno_9@616.sb" title="E-Mail → mailto:cirno_9@616.sb" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://wpa.qq.com/msgrd?v=3&uin=3535611921&site=qq&menu=yes" title="QQ → https:&#x2F;&#x2F;wpa.qq.com&#x2F;msgrd?v&#x3D;3&amp;uin&#x3D;3535611921&amp;site&#x3D;qq&amp;menu&#x3D;yes" rel="noopener" target="_blank"><i class="fab fa-qq fa-fw"></i>QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://codeforces.com/profile/Ilith" title="CF → https:&#x2F;&#x2F;codeforces.com&#x2F;profile&#x2F;Ilith" rel="noopener" target="_blank"><i class="fa fa-code fa-fw"></i>CF</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://osu.ppy.sh/users/18586913" title="osu! → https:&#x2F;&#x2F;osu.ppy.sh&#x2F;users&#x2F;18586913" rel="noopener" target="_blank"><i class="fa fa-genderless fa-fw"></i>osu!</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.luogu.com.cn/user/78372" title="https:&#x2F;&#x2F;www.luogu.com.cn&#x2F;user&#x2F;78372" rel="noopener" target="_blank">Luogu</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="http://codeforces.com/profile/Ilith" title="http:&#x2F;&#x2F;codeforces.com&#x2F;profile&#x2F;Ilith" rel="noopener" target="_blank">CF</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://atcoder.jp/users/Cirno_9" title="https:&#x2F;&#x2F;atcoder.jp&#x2F;users&#x2F;Cirno_9" rel="noopener" target="_blank">AT</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-bed"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cirno_9</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/gh/theme-next/theme-next-pjax@0/pjax.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+  <script>
+var pjax = new Pjax({
+  selectors: [
+    'head title',
+    '#page-configurations',
+    '.content-wrap',
+    '.post-toc-wrap',
+    '.languages',
+    '#pjax'
+  ],
+  switches: {
+    '.post-toc-wrap': Pjax.switches.innerHTML
+  },
+  analytics: false,
+  cacheBust: false,
+  scrollTo : !CONFIG.bookmark.enable
+});
+
+window.addEventListener('pjax:success', () => {
+  document.querySelectorAll('script[data-pjax], script#page-configurations, #pjax script').forEach(element => {
+    var code = element.text || element.textContent || element.innerHTML || '';
+    var parent = element.parentNode;
+    parent.removeChild(element);
+    var script = document.createElement('script');
+    if (element.id) {
+      script.id = element.id;
+    }
+    if (element.className) {
+      script.className = element.className;
+    }
+    if (element.type) {
+      script.type = element.type;
+    }
+    if (element.src) {
+      script.src = element.src;
+      // Force synchronous loading of peripheral JS.
+      script.async = false;
+    }
+    if (element.dataset.pjax !== undefined) {
+      script.dataset.pjax = '';
+    }
+    if (code !== '') {
+      script.appendChild(document.createTextNode(code));
+    }
+    parent.appendChild(script);
+  });
+  NexT.boot.refresh();
+  // Define Motion Sequence & Bootstrap Motion.
+  if (CONFIG.motion.enable) {
+    NexT.motion.integrator
+      .init()
+      .add(NexT.motion.middleWares.subMenu)
+      .add(NexT.motion.middleWares.postList)
+      .bootstrap();
+  }
+  NexT.utils.updateSidebarPosition();
+});
+</script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="pjax">
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : true,
+      appId      : 'qC4o6iAgUHHSbFmFYz3XiDJL-gzGzoHsz',
+      appKey     : 'YiUTh2gq1rKEPcmHf5rFYzyH',
+      placeholder: "有什么想说的吗 QAQ",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+    </div>
+</body>
+</html>
