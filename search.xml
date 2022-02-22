@@ -1809,4 +1809,26 @@ f_k = \sum _{i=k}^n (-1)^{k-i}{i\brack k} g_k
         <tag>LCT</tag>
       </tags>
   </entry>
+  <entry>
+    <title>密码测试页</title>
+    <url>/%E9%9D%9E-OI/test/</url>
+    <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="不对不对，是不是忘记密码了呢qaq" data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="0137ee992af8ebb2c03a0c95c1ceb3660d468e3a7e096ae1980638ae0b6935e2">200ef44fbb753489633b44576335327ca8f3634f09ab3c6cc610f872317fc7b0ec4db5d8f34c96afe67531eb387b93d2927e821e4ec24ec3e310449e35c50779</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">呜呜不要看，人家会害羞啦⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
+      <categories>
+        <category>非 OI</category>
+      </categories>
+      <tags>
+        <tag>QAQ</tag>
+      </tags>
+  </entry>
 </search>
