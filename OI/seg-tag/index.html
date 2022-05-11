@@ -28,7 +28,7 @@
 <meta property="og:description" content="菜菜，搞不清楚。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-05-10T02:19:30.000Z">
-<meta property="article:modified_time" content="2022-05-10T03:56:18.603Z">
+<meta property="article:modified_time" content="2022-05-11T07:11:39.839Z">
 <meta property="article:author" content="Cirno_9">
 <meta property="article:tag" content="数据结构">
 <meta name="twitter:card" content="summary">
@@ -222,10 +222,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-05-10 10:19:30 / 修改时间：11:56:18" itemprop="dateCreated datePublished" datetime="2022-05-10T10:19:30+08:00">2022-05-10</time>
+              <time title="创建时间：2022-05-10 10:19:30" itemprop="dateCreated datePublished" datetime="2022-05-10T10:19:30+08:00">2022-05-10</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-05-11 15:11:39" itemprop="dateModified" datetime="2022-05-11T15:11:39+08:00">2022-05-11</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -266,11 +272,11 @@
 <h3 id="标记的含义"><a class="markdownIt-Anchor" href="#标记的含义"></a> 标记的含义</h3>
 <p>意思就是你写了个有标记的线段树，但标记下传时如果需要使用一些数据结构上的信息，它使用的到底是什么。</p>
 <p>此时使用的信息，是<strong>打标记时</strong>的（之前的），而不是<strong>当前</strong>的，我之前一直没考虑过这一点。所以我们下传此标记时应该使用的是原来下传前的节点信息，换句话说此标记应<strong>先下传</strong>，然后正常玩就行。</p>
-<p>好像很抽象，举个例子。</p>
+<p>明明是正常操作，为啥这么麻烦捏？因为即使在标记下传前不会访问到它的儿子，但它自己的任何标记都可能发生更改，这需要我们用一些手段来分清当前的信息和之前的信息。</p>
 <h3 id="最值操作转化为最值加"><a class="markdownIt-Anchor" href="#最值操作转化为最值加"></a> 最值操作转化为最值加</h3>
 <p>比如区间对 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span> 取 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>min</mi><mo>⁡</mo></mrow><annotation encoding="application/x-tex">\min</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66786em;vertical-align:0em;"></span><span class="mop">min</span></span></span></span>，在节点上维护区间最大值 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">mx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">x</span></span></span></span> 和次大值 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">se</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">e</span></span></span></span>，那么 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi><mo>≥</mo><mi>m</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">x\ge mx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7719400000000001em;vertical-align:-0.13597em;"></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≥</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">x</span></span></span></span> 对区间无影响，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>x</mi><mo>&gt;</mo><mi>x</mi><mo>&gt;</mo><mi>s</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">mx&gt;x&gt;se</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathdefault">x</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">s</span><span class="mord mathdefault">e</span></span></span></span> 等同于将所有区间最大值改为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>x</mi></mrow><annotation encoding="application/x-tex">x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span>。这个标记也是带有时间的（更改当前状态下数据结构中的区间最大值），下传时我们应该在别的标记下传前下传到最大值等于 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>m</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">mx</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">m</span><span class="mord mathdefault">x</span></span></span></span> 的儿子就行。</p>
-<h3 id="历史版本和"><a class="markdownIt-Anchor" href="#历史版本和"></a> 历史版本和</h3>
-<p>标记的意义是「将当前区间和计入答案」，那么它下传时使用的区间和一定是原先的，正常玩。</p>
+<hr />
+<p>施工中</p>
 
     </div>
 
@@ -353,7 +359,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0%E7%9A%84%E5%90%AB%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text"> 标记的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%80%BC%E6%93%8D%E4%BD%9C%E8%BD%AC%E5%8C%96%E4%B8%BA%E6%9C%80%E5%80%BC%E5%8A%A0"><span class="nav-number">2.</span> <span class="nav-text"> 最值操作转化为最值加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%86%E5%8F%B2%E7%89%88%E6%9C%AC%E5%92%8C"><span class="nav-number">3.</span> <span class="nav-text"> 历史版本和</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0%E7%9A%84%E5%90%AB%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text"> 标记的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%80%BC%E6%93%8D%E4%BD%9C%E8%BD%AC%E5%8C%96%E4%B8%BA%E6%9C%80%E5%80%BC%E5%8A%A0"><span class="nav-number">2.</span> <span class="nav-text"> 最值操作转化为最值加</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
